@@ -1120,7 +1120,12 @@ svg.vx-map > text.sm { fill: var(--accent-ink); opacity: 0.85; }
 .bo .brand { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
 .bo .brand b { font-family: var(--f-head); font-size: 20px; font-weight: 600; letter-spacing: -0.005em; }
 .bo .brand span { font-size: 13px; color: var(--muted); }
-.bo .top-btns { display: flex; gap: 8px; }
+.bo .top-btns { display: flex; gap: 8px; align-items: center; }
+.bo-tour { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; font-size: 12px; font-weight: 600; color: var(--accent); background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 34%, transparent); border-radius: 999px; padding: 4px 5px 4px 10px; }
+.bo-tour b { font-variant-numeric: tabular-nums; font-weight: 700; }
+.bo-tour-x { border: 0; background: var(--surface); color: var(--ink-2); font-size: 11px; font-weight: 600; border-radius: 999px; padding: 3px 9px; }
+.bo-tour-x:hover { background: var(--accent); color: var(--accent-ink); }
+
 .bo nav.tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; width: 100%; margin-top: 6px; }
 .bo nav.tabs button { border: 0; background: none; border-bottom: 3px solid transparent; padding: 9px 14px 10px; font-weight: 600; font-size: 14px; color: var(--muted); white-space: nowrap; display: inline-flex; gap: 8px; align-items: center; }
 .bo nav.tabs button .k { font-family: var(--f-mono); font-size: 11px; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; line-height: 17px; color: var(--muted); }
@@ -1798,7 +1803,7 @@ svg.vx-map > text.sm { fill: var(--accent-ink); opacity: 0.85; }
 <div class="top bo-top">
   <div class="wrap top-in">
     <div class="brand"><b>Claude for the Back Office</b><span>FP&amp;A, accounting and bank back office &middot; adoption plan and live demo &middot; Katrina Li</span></div>
-    <div class="top-btns"><button class="btn sm" id="reset" type="button">Reset demo</button></div>
+    <div class="top-btns"><span class="bo-tour" id="bo-tour" hidden>Auto-advancing <b id="bo-tour-n">1/4</b><button class="bo-tour-x" type="button" id="bo-tour-stop">Stop</button></span><button class="btn sm" id="reset" type="button">Reset demo</button></div>
     <nav class="tabs" role="tablist" aria-label="Sections">
       <button role="tab" id="tab-method" aria-selected="true" aria-controls="v-method" data-v="method"><span class="k">1</span>The method</button>
       <button role="tab" id="tab-who" aria-selected="false" aria-controls="v-who" data-v="who"><span class="k">2</span>Who to enter through</button>
@@ -5955,7 +5960,35 @@ function show(v, fromHash) {
   if (v === 'method' && !chatPlayed && boVisible()) playChat();
   if (v === 'who' && !whoPlayed && boVisible()) setTimeout(whoPlay, 400);
 }
-$$('nav.tabs button').forEach(function (b) { b.addEventListener('click', function () { show(b.dataset.v); }); });
+$$('nav.tabs button').forEach(function (b) { b.addEventListener('click', function () { tourStop(true); show(b.dataset.v); }); });
+
+/* ---------------- auto-advance 1 -> 2 -> 3 -> 4 on entering the chapter ---------------- */
+/* steps 1 and 2 play their own animations, so they dwell longer */
+var TOUR_MS = { method: 9000, who: 8500, live: 7000 };
+var tourTok = 0, tourDone = false;
+function tourBadge(i) {
+  var el = $('#bo-tour'); if (!el) return;
+  if (i < 0) { el.hidden = true; return; }
+  $('#bo-tour-n').textContent = (i + 1) + '/' + VIEWS.length; el.hidden = false;
+}
+function tourStop(done) { tourTok++; if (done) tourDone = true; tourBadge(-1); }
+async function tourStart() {
+  if (tourDone || REDUCED) return;            /* reduced motion: never move on its own */
+  var tok = ++tourTok;
+  var open = VIEWS.filter(function (k) { return !$('#v-' + k).hidden; })[0];
+  var start = Math.max(0, VIEWS.indexOf(open));
+  for (var i = start; i < VIEWS.length - 1; i++) {
+    tourBadge(i);
+    await wait(TOUR_MS[VIEWS[i]]);
+    if (tok !== tourTok) return;               /* the viewer took over */
+    if (!boVisible()) { tourTok++; tourBadge(-1); return; }  /* they left the chapter: resume next visit */
+    show(VIEWS[i + 1]);
+  }
+  tourBadge(VIEWS.length - 1);
+  await wait(1400);
+  if (tok !== tourTok) return;
+  tourStop(true);
+}
 
 /* ---------------- tab 1 ---------------- */
 /* the new-way chat plays like a live conversation: typing, then the message */
@@ -6441,15 +6474,16 @@ $('#replay').addEventListener('click', async function () {
 });
 
 /* ---------------- reset + boot ---------------- */
+$('#bo-tour-stop').addEventListener('click', function () { tourStop(true); });
 $('#reset').addEventListener('click', function () {
-  ST = fresh(); flyQ = []; lastRect = null; renderWF(false); renderSide(); whoTok++; whoPlayed = false; whoStage = 0; renderWho(0, false);
+  tourStop(true); ST = fresh(); flyQ = []; lastRect = null; renderWF(false); renderSide(); whoTok++; whoPlayed = false; whoStage = 0; renderWho(0, false);
   $('#replay-out').textContent = ''; $('#drawer').hidden = true;
   chatTok++; $$('#chat1 .typing-b').forEach(function (x) { x.remove(); }); $$('#chat1 .msg').forEach(function (m) { m.hidden = false; var t = $('.t', m); if (t && t.dataset.full) { t.textContent = t.dataset.full; t.classList.remove('streaming'); } });
   toast('Demo reset');
 });
 renderWF(false); renderSide();
 show('method', true);
-window.__boEnter = function () { var cur = VIEWS.filter(function (k) { return !$('#v-' + k).hidden; })[0]; if (cur === 'method' && !chatPlayed) playChat(); if (cur === 'who' && !whoPlayed) setTimeout(whoPlay, 400); };
+window.__boEnter = function () { var cur = VIEWS.filter(function (k) { return !$('#v-' + k).hidden; })[0]; if (cur === 'method' && !chatPlayed) playChat(); if (cur === 'who' && !whoPlayed) setTimeout(whoPlay, 400); tourStart(); };
 if (boVisible()) window.__boEnter();
 })();
 </script>
