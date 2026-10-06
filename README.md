@@ -1,4 +1,4 @@
-# AI in Financial Services
+# AI for Financial Services
 
 By Katrina Li.
 
