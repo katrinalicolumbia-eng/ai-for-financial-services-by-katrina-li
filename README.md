@@ -7,6 +7,6 @@ risk-weighted model router ("the Allocator") that makes it cheap enough to run o
 and how the same method carries across investment banking, private markets, and FP&A and the
 bank back office.
 
-**Live:** https://katrinalicolumbia-eng.github.io/ai-in-financial-services-by-katrina-li/
+**Live:** https://katrinalicolumbia-eng.github.io/ai-for-financial-services-by-katrina-li/
 
 Everything is in `index.html` — no build step, no dependencies.
