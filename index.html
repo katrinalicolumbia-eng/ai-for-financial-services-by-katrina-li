@@ -1540,13 +1540,13 @@ svg.vx-map > text.sm { fill: var(--accent-ink); opacity: 0.85; }
 <!-- ===================== 00 OVERVIEW ===================== -->
 <section class="chap" id="ch-overview" data-ch="0">
   <div class="chap-head">
-    <div class="eyebrow">For Anthropic · financial services · Katrina Li</div>
+    <div class="eyebrow">Financial services · Katrina Li</div>
     <h1>I built a harness that does a five-day stock ramp in under 20 minutes. Then I made it cheap enough to run on every desk in finance.</h1>
     <p class="lede">You give it one ticker. It returns a full hedge-fund-grade model in Excel and an initiation deck. This is how it works, how I trained it, how routing across Claude&rsquo;s models keeps the cost down, and how the same method carries Claude across finance: investment banking, private markets, and FP&amp;A and the back office.</p>
   </div>
   <div class="panel hero-pipe" id="ov-pipe" aria-label="Ticker to Excel model to deck to every desk"></div>
   <div class="kpis" id="ov-kpis"></div>
-  <div class="callout"><b>Why this matters for Anthropic:</b> Claude already has the finance agents, plugins and connectors. The gap now is deployment, from months to days, desk by desk. This is the method I&rsquo;d bring: one narrow workflow a desk can check, house rules captured as skills, and Opus spent only where an error spreads.</div>
+  <div class="callout"><b>Why this matters:</b> Claude already has the finance agents, plugins and connectors. The gap now is deployment, from months to days, desk by desk. This is the method I&rsquo;d bring: one narrow workflow a desk can check, house rules captured as skills, and Opus spent only where an error spreads.</div>
   <div class="panel">
     <div class="panel-h"><h3>The story in eight steps</h3><span class="small">Click any step to jump there</span></div>
     <div class="chain" id="ov-chain"></div>
@@ -1633,7 +1633,7 @@ svg.vx-map > text.sm { fill: var(--accent-ink); opacity: 0.85; }
     </div>
   </div>
   <p class="note" id="os-note">Demo run dated Aug 7, 2026. NVIDIA historicals and guidance come from its filings. Forecasts, valuation, sentiment and the trading view are illustrative outputs of the model, not investment advice. The second workbook and deck in each window are the reference files the house style comes from.</p>
-  <div class="callout"><b>For Anthropic:</b> Claude for Excel and the equity research plugin can ship this pattern: a guide-tab format a fund fills in once, checks that run before the PM looks, and Opus only on the judgment steps. Costs shown are from my original multi-model run; each step is labeled with its Claude tier.</div>
+  <div class="callout"><b>What this means in product:</b> Claude for Excel and the equity research plugin can ship this pattern: a guide-tab format a fund fills in once, checks that run before the PM looks, and Opus only on the judgment steps. Costs shown are from my original multi-model run; each step is labeled with its Claude tier.</div>
   <div class="next-row"><button class="next-btn" data-go="3">How I trained it →</button></div>
 </section>
 
@@ -1732,7 +1732,7 @@ svg.vx-map > text.sm { fill: var(--accent-ink); opacity: 0.85; }
       </div>
     </div>
   </div>
-  <div class="callout"><b>For Anthropic:</b> routing by blast radius inside Claude&rsquo;s own family (Haiku reads, Sonnet builds, Opus decides, a person signs) makes Opus affordable where it changes the answer, so a bank can run it on every name and every close.</div>
+  <div class="callout"><b>What this means in product:</b> routing by blast radius inside Claude&rsquo;s own family (Haiku reads, Sonnet builds, Opus decides, a person signs) makes Opus affordable where it changes the answer, so a bank can run it on every name and every close.</div>
   <div class="next-row"><button class="next-btn" data-go="5">On top of it: the research →</button></div>
 </section>
 
@@ -1802,7 +1802,7 @@ svg.vx-map > text.sm { fill: var(--accent-ink); opacity: 0.85; }
   <div class="vx-sectors" id="vx-sectors" role="group" aria-label="Sectors" hidden></div>
   <div id="vx-detail" class="stack" style="gap:16px;"></div>
   <details class="panel vx-compare"><summary>Compare the four desks side by side</summary><div class="tbl-wrap" style="margin-top:10px"><table class="matrix" id="vx-matrix"></table></div></details>
-  <div class="callout"><b>For Anthropic:</b> each desk maps to a finance plugin Claude already ships: equity research, investment banking, private equity, and the finance plugin for accounting and the close.</div>
+  <div class="callout"><b>What this means in product:</b> each desk maps to a finance plugin Claude already ships: equity research, investment banking, private equity, and the finance plugin for accounting and the close.</div>
   <div class="next-row"><button class="next-btn" data-go="7">The back office, live: FP&amp;A →</button></div>
 </section>
 
@@ -2134,7 +2134,7 @@ svg.vx-map > text.sm { fill: var(--accent-ink); opacity: 0.85; }
     <div class="panel-h"><h3>Sequencing</h3><span class="small">Each step reuses what the last one built</span></div>
     <div id="roi-seq"></div>
   </div>
-  <div class="callout"><b>Why I&rsquo;m ready:</b> I&rsquo;ve built the agent, tested it on the desks, and mapped how each desk adopts. I&rsquo;d like to do it at Anthropic&rsquo;s scale, taking Claude&rsquo;s finance agents from demo to daily use.</div>
+  <div class="callout"><b>Why I&rsquo;m ready:</b> I&rsquo;ve built the agent, tested it on the desks, and mapped how each desk adopts. I&rsquo;d like to do it at scale, taking Claude&rsquo;s finance agents from demo to daily use.</div>
   <div class="panel">
     <h3 style="margin-bottom: 10px;">Sources</h3>
     <ol class="src" id="ls-src"></ol>
