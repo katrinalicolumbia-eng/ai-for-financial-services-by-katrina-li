@@ -4653,8 +4653,10 @@ async function conShow(view, instant) {
     tw.appendChild(h('table', {}, [h('thead', { html: '<tr><th>#</th><th>STEP · TOKENS</th><th>RISK</th><th class="r">ROUTE · COST · LAT</th></tr>' }), tb]));
     var side = h('div', { class: 'stack', style: 'gap:8px' });
     grid.appendChild(tw); grid.appendChild(side); o.appendChild(grid);
-    var tiers = [['front', '1) CLAUDE OPUS', 'OPUS 5.5', 'JUDGMENT · SEGMENTS, VALUATION, THE CALL', 2], ['open', '2) CLAUDE SONNET', 'SONNET', 'BUILDING · STATEMENTS, COMPS, DRAFTS', 3], ['local', '3) CLAUDE HAIKU', 'HAIKU', 'READING · FILINGS, XBRL, FORMATTING', 1]];
-    tiers.forEach(function (t) { side.appendChild(h('div', { class: 'tbox', style: 'border-color: var(--tf-' + t[0] + ')', html: '<div class="dim" style="font-size:10.5px">' + t[1] + '</div><div style="font-weight:600; margin: 2px 0;">' + t[2] + '</div><div class="dim" style="font-size:10.5px">' + t[3] + '</div><div style="font-size:10.5px; margin-top:4px; color: var(--tf-' + t[0] + ')">' + t[4] + ' STEP' + (t[4] > 1 ? 'S' : '') + ' ROUTED</div>' })); });
+    /* lanes are roles, each served by whichever family wins it; the step count is read off the
+       dispatch table so it cannot drift from what the rows above actually show */
+    var tiers = [['front', '1) JUDGMENT', 'OPUS 5.5 + GPT-5 CHECK', 'SEGMENTS, VALUATION, THE CALL'], ['open', '2) BUILD & DRAFT', 'SONNET · GPT-5 MINI', 'STATEMENTS, COMPS, DRAFTS'], ['local', '3) BULK READ', 'LLAMA 4 IN-VPC · HAIKU', 'FILINGS, XBRL, FORMATTING']];
+    tiers.forEach(function (t) { var cnt = RSTEPS.filter(function (st) { return st.r.risk[0] === t[0]; }).length; side.appendChild(h('div', { class: 'tbox', style: 'border-color: var(--tf-' + t[0] + ')', html: '<div class="dim" style="font-size:10.5px">' + t[1] + '</div><div style="font-weight:600; margin: 2px 0;">' + t[2] + '</div><div class="dim" style="font-size:10.5px">' + t[3] + '</div><div style="font-size:10.5px; margin-top:4px; color: var(--tf-' + t[0] + ')">' + cnt + ' STEP' + (cnt > 1 ? 'S' : '') + ' ROUTED</div>' })); });
     for (var i = 0; i < RSTEPS.length; i++) {
       if (run !== conRun) return;
       var st = RSTEPS[i], r = st.r.risk, col = st.blast >= 4 ? 'var(--term-bad)' : st.blast >= 3 ? 'var(--term-amber)' : 'var(--term-good)';
@@ -4667,7 +4669,7 @@ async function conShow(view, instant) {
     return;
   }
   if (view === 'LEDGER') {
-    [['t+012', 'COMMIT', 'good', 'INGEST-01 · 312K tok of filings → 1,940 claims with provenance (page, table, line)'], ['t+019', 'COMMIT', 'good', 'HISTORICALS-03 · 12 quarters rebuilt; balance sheet balances; cash flow ties'], ['t+027', 'ROUTE', 'amb', 'router.select → revenue segmentation, risk 0.81 → opus'], ['t+041', 'HALT', 'bad', 'Revenue-driver claim invalidated — 6 downstream claims frozen'], ['t+043', 'REVALIDATE', 'amb', 'Blast-radius frontier re-verified, $17.20 charged to owner'], ['t+048', 'ROUTE', 'good', 'Low-risk formatting step downgraded to cached local model — $0.04'], ['t+056', 'ESCALATE', 'amb', 'WACC assumption uncertainty routed to human desk review'], ['t+063', 'COMMIT', 'good', 'VALUATION-05 · DCF passes independent verifier; memo released for audit']].forEach(async function (x, i) {
+    [['t+012', 'COMMIT', 'good', 'INGEST-01 · 312K tok of filings → 1,940 claims with provenance (page, table, line)'], ['t+019', 'COMMIT', 'good', 'HISTORICALS-03 · 12 quarters rebuilt; balance sheet balances; cash flow ties'], ['t+027', 'ROUTE', 'amb', 'router.select → revenue segmentation, risk 0.81 → claude opus 5.5'], ['t+041', 'HALT', 'bad', 'Revenue-driver claim invalidated — 6 downstream claims frozen'], ['t+043', 'REVALIDATE', 'amb', 'Blast-radius frontier re-verified, $17.20 charged to owner'], ['t+048', 'ROUTE', 'good', 'Low-risk formatting step downgraded to Llama 4 Maverick, in-VPC — $0.04'], ['t+056', 'ESCALATE', 'amb', 'WACC assumption uncertainty routed to human desk review'], ['t+063', 'COMMIT', 'good', 'VALUATION-05 · DCF passes independent verifier; memo released for audit']].forEach(async function (x, i) {
       await wait(i * (instant ? 0 : 160)); if (run !== conRun) return;
       o.appendChild(h('div', { html: '<span class="dim">' + x[0] + '</span> <span class="' + x[2] + '" style="display:inline-block; width: 92px;">' + x[1] + '</span>' + esc(x[3]) }));
     });
@@ -4675,7 +4677,7 @@ async function conShow(view, instant) {
   }
   if (view === 'CONTAIN') {
     o.appendChild(h('div', { class: 'tbox', html: '<span class="bad">INJECTED ERROR</span> · revenue-driver claim on Data Center networking off by one quarter' }));
-    var lines = [['FROZEN', 'bad', '3-stmt forecast · comps valuation · DCF valuation · sensitivity · call & memo · trading strategy'], ['UNTOUCHED', 'good', 'filings, historicals, WACC, terminal growth, disclosure note (outside the blast radius)'], ['RE-DERIVED', 'amb', '6 claims by an independent evaluator in 38s'], ['CHARGED', 'amb', '$17.20 remediation → FORECAST budget (owner), not the fleet'], ['RESULT', 'good', 'Same verified memo. An all-frontier run would have re-run all six steps: $18.40 again.']];
+    var lines = [['FROZEN', 'bad', '3-stmt forecast · comps valuation · DCF valuation · sensitivity · call & memo · trading strategy'], ['UNTOUCHED', 'good', 'filings, historicals, WACC, terminal growth, disclosure note (outside the blast radius)'], ['RE-DERIVED', 'amb', '6 claims re-derived by GPT-5, a different family from the one that wrote them, in 38s'], ['CHARGED', 'amb', '$17.20 remediation → FORECAST budget (owner), not the fleet'], ['RESULT', 'good', 'Same verified memo. An all-frontier run would have re-run all six steps: $18.40 again.']];
     for (var j = 0; j < lines.length; j++) { if (run !== conRun) return; o.appendChild(h('div', { html: '<span class="' + lines[j][1] + '" style="display:inline-block; width: 100px;">' + lines[j][0] + '</span>' + esc(lines[j][2]) })); await wait(d); }
     return;
   }
