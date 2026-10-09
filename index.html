@@ -4655,7 +4655,7 @@ async function conShow(view, instant) {
     grid.appendChild(tw); grid.appendChild(side); o.appendChild(grid);
     /* lanes are roles, each served by whichever family wins it; the step count is read off the
        dispatch table so it cannot drift from what the rows above actually show */
-    var tiers = [['front', '1) JUDGMENT', 'OPUS 5.5 + GPT-5 CHECK', 'SEGMENTS, VALUATION, THE CALL'], ['open', '2) BUILD & DRAFT', 'SONNET · GPT-5 MINI', 'STATEMENTS, COMPS, DRAFTS'], ['local', '3) BULK READ', 'LLAMA 4 IN-VPC · HAIKU', 'FILINGS, XBRL, FORMATTING']];
+    var tiers = [['front', '1) JUDGMENT', 'OPUS 5.5 + GPT-5 CHECK', 'SEGMENTS, VALUATION, THE CALL'], ['open', '2) BUILD &amp; DRAFT', 'SONNET · GPT-5 MINI', 'STATEMENTS, COMPS, DRAFTS'], ['local', '3) BULK READ', 'LLAMA 4 IN-VPC · HAIKU', 'FILINGS, XBRL, FORMATTING']];
     tiers.forEach(function (t) { var cnt = RSTEPS.filter(function (st) { return st.r.risk[0] === t[0]; }).length; side.appendChild(h('div', { class: 'tbox', style: 'border-color: var(--tf-' + t[0] + ')', html: '<div class="dim" style="font-size:10.5px">' + t[1] + '</div><div style="font-weight:600; margin: 2px 0;">' + t[2] + '</div><div class="dim" style="font-size:10.5px">' + t[3] + '</div><div style="font-size:10.5px; margin-top:4px; color: var(--tf-' + t[0] + ')">' + cnt + ' STEP' + (cnt > 1 ? 'S' : '') + ' ROUTED</div>' })); });
     for (var i = 0; i < RSTEPS.length; i++) {
       if (run !== conRun) return;
