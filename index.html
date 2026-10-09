@@ -1684,8 +1684,8 @@ svg.vx-map > text.sm { fill: var(--accent-ink); opacity: 0.85; }
     <p class="lede">A ramp is dozens of steps. A few need real judgment, like how to split NVIDIA's revenue or which terminal growth rate to use. Most are reading and reformatting. So the harness breaks the job down, scores each step by how much damage an error would do downstream, and sends it to the cheapest model that clears the bar.</p>
   </div>
   <div class="grid2">
-    <div class="card"><span class="tag">Claude Opus is the CPU</span><b>Few, expensive, branching decisions</b><p class="small">What matters in this company, how to split the work, how to segment revenue, which assumption sets the answer. Opus, with an independent check where the blast radius is wide.</p></div>
-    <div class="card"><span class="tag">Sonnet and Haiku are the GPU</span><b>Wide, parallel, repetitive work</b><p class="small">Read 600 pages of filings, normalize XBRL, rebuild twelve quarters, format to house style. Cheaper and faster, and they can run inside the customer&rsquo;s own cloud account.</p></div>
+    <div class="card"><span class="tag">Frontier models are the CPU</span><b>Few, expensive, branching decisions</b><p class="small">What matters in this company, how to split the work, how to segment revenue, which assumption sets the answer. Claude Opus 5.5 decides. Where the blast radius is widest, GPT-5 re-derives the same claim from the same evidence: a second family cannot repeat the first one&rsquo;s blind spot the way a model checking its own work does.</p></div>
+    <div class="card"><span class="tag">Cheap and open models are the GPU</span><b>Wide, parallel, repetitive work</b><p class="small">Read 600 pages of filings, normalize XBRL, rebuild twelve quarters, format to house style. Claude Sonnet and GPT-5 mini build and draft; Llama 4 Maverick does the bulk reading on the bank&rsquo;s own GPUs, so filings and anything market-sensitive never leave its network.</p></div>
   </div>
   <div class="panel">
     <div class="panel-h">
@@ -1694,7 +1694,7 @@ svg.vx-map > text.sm { fill: var(--accent-ink); opacity: 0.85; }
     </div>
     <div id="rt-board"></div>
     <div class="kpis" id="rt-kpis" style="margin-top: 14px;"></div>
-    <p class="note" style="margin-top:8px;">Per-step cost and tokens from the recorded dispatch run in my paper, measured on my original multi-model mix; tiers are shown as their Claude equivalents. Reliability per step and the rework charge (two analyst hours at $150 when a run fails review) are my modeling assumptions.</p>
+    <p class="note" style="margin-top:8px;">Per-step cost and tokens from the recorded dispatch run in my paper, measured on my original multi-model mix across Claude, GPT and open-weight models. Reliability per step and the rework charge (two analyst hours at $150 when a run fails review) are my modeling assumptions.</p>
   </div>
   <div class="panel">
     <div class="panel-h"><h3>The execution ledger</h3><div class="row"><button class="btn" id="dag-inject">Inject an error at revenue drivers</button><button class="btn ghost" id="dag-reset">Reset</button></div></div>
@@ -1732,7 +1732,7 @@ svg.vx-map > text.sm { fill: var(--accent-ink); opacity: 0.85; }
       </div>
     </div>
   </div>
-  <div class="callout"><b>What this means in product:</b> routing by blast radius inside Claude&rsquo;s own family (Haiku reads, Sonnet builds, Opus decides, a person signs) makes Opus affordable where it changes the answer, so a bank can run it on every name and every close.</div>
+  <div class="callout"><b>What this means in product:</b> routing by blast radius across vendors &mdash; open weights read inside the bank&rsquo;s own cloud, Sonnet and GPT-5 mini build, Opus decides, GPT-5 re-derives the widest claims, a person signs &mdash; makes the frontier affordable exactly where it changes the answer, so a bank can run it on every name and every close. Putting the verifier in a different family is the part a single-vendor stack cannot buy: a model checking its own work repeats its own blind spots.</div>
   <div class="next-row"><button class="next-btn" data-go="5">On top of it: the research →</button></div>
 </section>
 
@@ -2237,9 +2237,9 @@ function blastEl(level) { // level 1..5
   return b;
 }
 var TIERS = {
-  front: { name: 'Claude Opus', models: 'Opus 5.5: judgment steps' },
-  open: { name: 'Claude Sonnet', models: 'Sonnet: building and drafting' },
-  local: { name: 'Claude Haiku', models: 'Haiku: reading and re-keying, in the customer’s cloud' },
+  front: { name: 'Judgment', models: 'Claude Opus 5.5 decides; GPT-5 re-derives the widest claims independently' },
+  open: { name: 'Build & draft', models: 'Claude Sonnet drafts; GPT-5 mini for structured rebuilds' },
+  local: { name: 'Bulk read', models: 'Llama 4 Maverick (open weights) in the bank’s own cloud; Claude Haiku on public data' },
   human: { name: 'Human gate', models: 'Analyst, banker or PM sign-off' }
 };
 function tierEl(t, label) { return h('span', { class: 'tier ' + t, text: label || TIERS[t].name }); }
@@ -4444,23 +4444,23 @@ async function loopRun() {
 /* ================= 04 THE ALLOCATOR ================= */
 var RSTEPS = [
   { l: 'Ingest 10-K and four 10-Qs', d: '~600 pages → structured notes', tok: '312K', blast: 1, agent: 'INGEST-01',
-    r: { risk: ['open', 'Sonnet', 0.10, 0.995, '48s'], frontier: ['front', 'Opus 5.5', 3.40, 0.996, '1.6m'], cheap: ['open', 'Sonnet', 0.10, 0.995, '48s'] } },
+    r: { risk: ['local', 'Llama 4 Maverick · in-VPC', 0.10, 0.995, '48s'], frontier: ['front', 'Claude Opus 5.5', 3.40, 0.996, '1.6m'], cheap: ['local', 'Llama 4 Maverick · in-VPC', 0.10, 0.995, '48s'] } },
   { l: 'Normalize XBRL and market data', d: 'segment tables → clean time series', tok: '60K', blast: 1, agent: 'NORMALIZE-02',
-    r: { risk: ['local', 'Haiku', 0.00, 0.997, '9s'], frontier: ['front', 'Opus 5.5', 0.80, 0.997, '40s'], cheap: ['local', 'Haiku', 0.00, 0.997, '9s'] } },
+    r: { risk: ['local', 'Claude Haiku', 0.00, 0.997, '9s'], frontier: ['front', 'Claude Opus 5.5', 0.80, 0.997, '40s'], cheap: ['local', 'Claude Haiku', 0.00, 0.997, '9s'] } },
   { l: 'Rebuild 3-statement historicals', d: '12 quarters, ties and checks', tok: '140K', blast: 3, agent: 'HISTORICALS-03',
-    r: { risk: ['open', 'Sonnet', 0.08, 0.990, '36s'], frontier: ['front', 'Opus 5.5', 1.90, 0.994, '1.1m'], cheap: ['open', 'Sonnet', 0.08, 0.990, '36s'] } },
+    r: { risk: ['open', 'GPT-5 mini', 0.08, 0.990, '36s'], frontier: ['front', 'Claude Opus 5.5', 1.90, 0.994, '1.1m'], cheap: ['open', 'GPT-5 mini', 0.08, 0.990, '36s'] } },
   { l: 'Deep research: moat and capex cycle', d: '110 tool calls: transcripts, sell-side, news', tok: '1.4M', blast: 4, agent: 'RESEARCH-04',
-    r: { risk: ['front', 'Opus 5.5', 4.10, 0.985, '7.4m'], frontier: ['front', 'Opus 5.5 + uniform checks', 6.20, 0.990, '8.9m'], cheap: ['open', 'Sonnet', 0.45, 0.820, '4.2m'] } },
+    r: { risk: ['front', 'Claude Opus 5.5', 4.10, 0.985, '7.4m'], frontier: ['front', 'Claude Opus 5.5 + uniform checks', 6.20, 0.990, '8.9m'], cheap: ['open', 'GPT-5 mini', 0.45, 0.820, '4.2m'] } },
   { l: 'DCF, WACC and sensitivities', d: 'maximum blast radius in the graph', tok: '260K', blast: 5, agent: 'VALUATION-05', ver: true,
-    r: { risk: ['front', 'Opus 5.5 + independent verifier', 2.60, 0.995, '2.1m'], frontier: ['front', 'Opus 5.5 + uniform checks', 3.90, 0.995, '2.6m'], cheap: ['open', 'Sonnet', 0.09, 0.780, '40s'] } },
+    r: { risk: ['front', 'Claude Opus 5.5 + GPT-5 cross-check', 2.60, 0.995, '2.1m'], frontier: ['front', 'Claude Opus 5.5 + uniform checks', 3.90, 0.995, '2.6m'], cheap: ['local', 'Llama 4 Maverick', 0.09, 0.780, '40s'] } },
   { l: 'Draft and fact-check the initiation memo', d: 'cite every claim; audit pass', tok: '120K', blast: 3, agent: 'MEMO-06', ver: true,
-    r: { risk: ['open', 'Sonnet draft + Opus 5.5 audit', 0.70, 0.990, '52s'], frontier: ['front', 'Opus 5.5', 2.20, 0.994, '1.2m'], cheap: ['open', 'Sonnet', 0.05, 0.900, '30s'] } }
+    r: { risk: ['open', 'Claude Sonnet draft + GPT-5 audit', 0.70, 0.990, '52s'], frontier: ['front', 'Claude Opus 5.5', 2.20, 0.994, '1.2m'], cheap: ['open', 'Claude Sonnet', 0.05, 0.900, '30s'] } }
 ];
 var LANES = ['local', 'open', 'front'];
 var rtPolicy = 'risk';
 INIT.alloc = function () {
   var board = $('#rt-board');
-  board.appendChild(h('div', { class: 'rt-row', style: 'margin-bottom:8px; display:grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.35fr) 160px 70px; gap: 10px;', html: '<span class="tag">Step · tokens · blast radius</span><span class="tag" style="display:grid;grid-template-columns:repeat(3,1fr);text-align:center;"><span>Haiku</span><span>Sonnet</span><span>Opus</span></span><span class="tag" style="text-align:right">Model</span><span class="tag" style="text-align:right">Cost</span>' }));
+  board.appendChild(h('div', { class: 'rt-row', style: 'margin-bottom:8px; display:grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.35fr) 160px 70px; gap: 10px;', html: '<span class="tag">Step · tokens · blast radius</span><span class="tag" style="display:grid;grid-template-columns:repeat(3,1fr);text-align:center;"><span>Bulk read</span><span>Build &amp; draft</span><span>Judgment</span></span><span class="tag" style="text-align:right">Model</span><span class="tag" style="text-align:right">Cost</span>' }));
   RSTEPS.forEach(function (st, i) {
     var lane = h('div', { style: 'position:relative; height: 30px; display:grid; grid-template-columns: repeat(3, 1fr); gap: 4px;' }, LANES.map(function (l) { return h('div', { style: 'background: var(--surface-2); border: 1px solid var(--line-2); border-radius: 6px;' }); }));
     var pill = h('div', { id: 'rt-pill-' + i, style: 'position:absolute; top:4px; height:22px; width: calc(33.333% - 10.67px); border-radius: 5px; display:flex; align-items:center; justify-content:center; font-size: 11.5px; font-weight: 700; color: #fff; transition: left .55s cubic-bezier(.3,.8,.2,1), background .4s; left: 4px;' });
@@ -4479,6 +4479,17 @@ INIT.alloc = function () {
   conInit();
   opsInit();
 };
+/* the pill names the model the step was dispatched to, so the vendor mix is visible as you toggle policy.
+   order matters: the primary model is matched before the one that only verifies it */
+function rtShort(m) {
+  if (/Opus/.test(m)) return 'Opus 5.5';
+  if (/Sonnet/.test(m)) return 'Sonnet';
+  if (/Haiku/.test(m)) return 'Haiku';
+  if (/Llama/.test(m)) return 'Llama 4';
+  if (/GPT-5 mini/.test(m)) return 'GPT-5 mini';
+  if (/GPT-5/.test(m)) return 'GPT-5';
+  return m;
+}
 function rtPaint() {
   var tot = 0, rel = 1, k = $('#rt-kpis');
   RSTEPS.forEach(function (st, i) {
@@ -4486,7 +4497,8 @@ function rtPaint() {
     var p = $('#rt-pill-' + i);
     p.style.left = 'calc(' + (li * 33.333) + '% + ' + (4 + 1.333 * li).toFixed(2) + 'px)';
     p.style.background = 'var(--t-' + r[0] + ')';
-    p.textContent = (r[0] === 'front' ? 'Opus' : r[0] === 'open' ? 'Sonnet' : 'Haiku') + ((st.ver && rtPolicy === 'risk') ? ' + verify' : '');
+    var vfy = (st.ver && rtPolicy === 'risk') ? (/GPT-5 (cross-check|audit)/.test(r[1]) ? ' + GPT-5' : ' + verify') : '';
+    p.textContent = rtShort(r[1]) + vfy;
     $('#rt-m-' + i).textContent = r[1];
     $('#rt-c-' + i).textContent = r[2] < 0.01 ? '<$0.01' : '$' + r[2].toFixed(2);
     tot += r[2]; rel *= r[3];
@@ -4521,10 +4533,10 @@ var DAG = {
   edges: [['filings', 'foot'], ['filings', 'line'], ['filings', 'seg'], ['k8', 'line'], ['mkt', 'seg'], ['mkt', 'wacc'], ['mkt', 'comps'], ['foot', 'disc'], ['line', 'hist'], ['seg', 'rev'], ['seg', 'tg'], ['hist', 'rev'], ['hist', 'mar'], ['rev', 'fc'], ['mar', 'fc'], ['fc', 'dcf'], ['fc', 'comps'], ['wacc', 'dcf'], ['tg', 'dcf'], ['dcf', 'sens'], ['dcf', 'call'], ['comps', 'call'], ['sens', 'call'], ['call', 'trade']],
   policy: {
     source: ['local', 'Source document: hashed and versioned, no model call'],
-    extract: ['open', 'Sonnet, automated tie-out checks'],
+    extract: ['open', 'GPT-5 mini, automated tie-out checks'],
     calc: ['open', 'Deterministic recalculation, checked against the ledger'],
-    output: ['open', 'Drafted by Sonnet, audited by Opus before release'],
-    judgment: ['front', 'Opus; independent re-derivation when blast radius is wide']
+    output: ['open', 'Drafted by Claude Sonnet, audited by GPT-5 before release'],
+    judgment: ['front', 'Claude Opus 5.5; GPT-5 re-derives independently when blast radius is wide']
   }
 };
 var dagSel = 'foot', dagBusy = false;
@@ -4580,7 +4592,7 @@ function dagPaint(sel, mode) { // mode: 'select' | 'error' | 'frozen' | 'clear'
 function dagSelect(id) {
   dagSel = id; dagPaint(id, 'select');
   var n = dagNode(id), desc = dagDesc(id), pol = DAG.policy[n[4]];
-  if (desc.length >= 4 && n[4] === 'judgment') pol = ['front', 'Opus + independent re-derivation + human gate'];
+  if (desc.length >= 4 && n[4] === 'judgment') pol = ['front', 'Claude Opus 5.5 + GPT-5 re-derivation + human gate'];
   if (desc.length <= 1 && n[4] !== 'source') pol = ['open', 'Cheap model, spot check only'];
   $('#dag-title').textContent = n[1];
   var info = $('#dag-info'); info.innerHTML = '';
@@ -4598,7 +4610,7 @@ async function dagInject() {
   await wait(1100);
   line('t+043', 'REVALIDATE', 'amb', 'Independent evaluator re-derives the frozen frontier. $17.20 of remediation charged to the owning agent’s budget.');
   await wait(1000);
-  line('t+048', 'ROUTE', 'good', 'Low-risk formatting step moved down to Haiku at $0.04.');
+  line('t+048', 'ROUTE', 'good', 'Low-risk formatting step moved down to Llama 4 Maverick, in-VPC, at $0.04.');
   await wait(900);
   line('t+056', 'ESCALATE', 'amb', 'WACC assumption uncertainty above tolerance. Routed to the human desk.');
   await wait(1000);
@@ -4668,7 +4680,7 @@ async function conShow(view, instant) {
     return;
   }
   if (view === 'AUTONOMY') {
-    var reg = [['INGEST-01', 'Filings reader (10-K + 10-Qs)', 'SONNET', 'SUPERVISED', '$0.10/RUN', 'good'], ['NORMALIZE-02', 'Data janitor (XBRL and market data)', 'HAIKU', 'TRUSTED', '<$0.01/RUN', 'good'], ['HISTORICALS-03', 'Model builder (12-quarter rebuild)', 'SONNET', 'SUPERVISED', '$0.08/RUN', 'good'], ['RESEARCH-04', 'Deep researcher (110 tool calls)', 'Opus 5.5', 'PROBATION', '$4.10/RUN', 'amb'], ['VALUATION-05', 'DCF core (WACC and sensitivities)', 'OPUS 5.5 + VERIFIER', 'PROBATION', '$2.60/RUN', 'amb'], ['MEMO-06', 'Writer + auditor (draft, cite, audit)', 'DEEPSEEK + AUDIT', 'SUPERVISED', '$0.70/RUN', 'good']];
+    var reg = [['INGEST-01', 'Filings reader (10-K + 10-Qs)', 'LLAMA 4 · VPC', 'SUPERVISED', '$0.10/RUN', 'good'], ['NORMALIZE-02', 'Data janitor (XBRL and market data)', 'HAIKU', 'TRUSTED', '<$0.01/RUN', 'good'], ['HISTORICALS-03', 'Model builder (12-quarter rebuild)', 'GPT-5 MINI', 'SUPERVISED', '$0.08/RUN', 'good'], ['RESEARCH-04', 'Deep researcher (110 tool calls)', 'OPUS 5.5', 'PROBATION', '$4.10/RUN', 'amb'], ['VALUATION-05', 'DCF core (WACC and sensitivities)', 'OPUS 5.5 + GPT-5', 'PROBATION', '$2.60/RUN', 'amb'], ['MEMO-06', 'Writer + auditor (draft, cite, audit)', 'SONNET + GPT-5 AUDIT', 'SUPERVISED', '$0.70/RUN', 'good']];
     o.appendChild(h('div', { class: 'tbl-wrap', html: '<table><thead><tr><th>AGENT ID</th><th>MANDATE</th><th>MODEL</th><th>AUTONOMY</th><th class="r">BUDGET</th></tr></thead><tbody>' + reg.map(function (r) { return '<tr><td class="amb">' + r[0] + '</td><td>' + esc(r[1]) + '</td><td class="dim">' + esc(r[2]) + '</td><td class="' + r[5] + '">' + r[3] + '</td><td class="r">' + esc(r[4]) + '</td></tr>'; }).join('') + '</tbody></table>' }));
     o.appendChild(h('div', { class: 'dim', text: 'LADDER: PROBATION → SUPERVISED → TRUSTED → AUTONOMOUS. PERMISSIONS AND BUDGET MOVE ON VERIFIED OUTCOMES, AND FALL BACK ON A FAILED VERIFICATION.' }));
     return;
@@ -5828,7 +5840,7 @@ var LEDGER = [
   ['verifier', 'NVDA', 'terminal growth at the 4.0% cap', 'warn', 'flagged for review'],
   ['agent-21', 'NFLX', 'ads ramp slower', 'good', 'no change to call'],
   ['agent-09', 'JNJ', 'biosimilar curve updated', 'good', '3 nodes re-derived'],
-  ['router', 'NVDA', 'filing parse → Haiku', 'acc', 'blast 1'],
+  ['router', 'NVDA', 'filing parse → Llama 4 · VPC', 'acc', 'blast 1'],
   ['agent-15', 'AVGO', 'custom silicon in line', 'good', 'auto-updated'],
   ['ledger', 'MU', 'target crosses +15% upside', 'warn', 'escalated to PM'],
   ['agent-04', 'TSM', 'monthly sales tracked', 'good', 'promoted to trusted']
